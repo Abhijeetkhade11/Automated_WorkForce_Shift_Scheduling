@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workforce Scheduling System - Portal</title>
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Background Gradients -->
+    <div class="bg-gradient-glow blob-1"></div>
+    <div class="bg-gradient-glow blob-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-calendar-alt"></i>
+                </div>
+                <h2>ShiftFlow</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-tab="shifts">
+                    <i class="fa-solid fa-calendar-days"></i> Shift Board
+                </a>
+                <a href="#" class="nav-item" data-tab="requests">
+                    <i class="fa-solid fa-list-check"></i> My Requests
+                </a>
+                <a href="#" class="nav-item manager-only" data-tab="manager" style="display: none;">
+                    <i class="fa-solid fa-user-shield"></i> Manager Admin
+                </a>
+            </nav>
+
+            <div class="user-profile-section" id="sidebar-profile">
+                <!-- Logged in user info goes here -->
+                <div class="guest-profile">
+                    <p>Not Logged In</p>
+                    <button class="btn btn-sm btn-outline" id="btn-show-login">Login</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-nav">
+                <div class="page-title">
+                    <h1 id="current-section-title">Dashboard Overview</h1>
+                    <p class="subtitle" id="current-section-subtitle">Real-time shift management and updates.</p>
+                </div>
+                <div class="top-nav-actions">
+                    <div class="connection-status">
+                        <span class="status-indicator online"></span>
+                        <span id="api-status-text">Connected to API</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Tabs -->
+            <div class="content-body">
+                
+                <!-- TAB: DASHBOARD -->
+                <section class="tab-content active" id="tab-dashboard">
+                    <!-- Welcome Hero Banner -->
+                    <div class="hero-banner">
+                        <div class="hero-text">
+                            <h2>Welcome back to ShiftFlow</h2>
+                            <p>Coordinate, view, and claim shift slots in real time. Avoid conflicts, and organize your work week effortlessly.</p>
+                        </div>
+                        <div class="hero-stats">
+                            <div class="stat-mini">
+                                <span class="stat-num" id="stat-total-shifts">0</span>
+                                <span class="stat-label">Available Shifts</span>
+                            </div>
+                            <div class="stat-mini">
+                                <span class="stat-num" id="stat-my-bookings">0</span>
+                                <span class="stat-label">My Confirmed Shifts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid Layout for Dashboard Cards -->
+                    <div class="dashboard-grid">
+                        <!-- Quick Actions -->
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h3>Quick Actions</h3>
+                            </div>
+                            <div class="card-body action-buttons-grid">
+                                <button class="btn btn-primary btn-block" onclick="switchTab('shifts')">
+                                    <i class="fa-solid fa-search"></i> Find Open Shifts
+                                </button>
+                                <button class="btn btn-secondary btn-block" onclick="switchTab('requests')">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Track Requests
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Shifts Preview -->
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h3>Upcoming Shifts</h3>
+                                <a href="#" class="view-all-link" onclick="switchTab('shifts')">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="shifts-list" id="dashboard-shifts-preview">
+                                    <div class="empty-state">
+                                        <i class="fa-solid fa-calendar-xmark"></i>
+                                        <p>No upcoming shifts found</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: SHIFTS -->
+                <section class="tab-content" id="tab-shifts">
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" placeholder="Search by date or role..." id="search-shifts">
+                        </div>
+                    </div>
+                    
+                    <div class="shifts-grid" id="shifts-container">
+                        <!-- Shift Cards injected dynamically -->
+                    </div>
+                </section>
+
+                <!-- TAB: REQUESTS -->
+                <section class="tab-content" id="tab-requests">
+                    <div class="card glass-card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Shift Details</th>
+                                            <th>Request Type</th>
+                                            <th>Submitted At</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="requests-table-body">
+                                        <!-- Requests injected dynamically -->
+                                        <tr>
+                                            <td colspan="6" class="text-center">No requests recorded. Register/login and book a shift to start tracking.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: MANAGER -->
+                <section class="tab-content" id="tab-manager">
+                    <!-- Create Shift Form -->
+                    <div class="card glass-card mb-4">
+                        <div class="card-header">
+                            <h3>Create New Shift Slot</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="create-shift-form" class="row-form">
+                                <div class="form-group">
+                                    <label for="shift-date">Date</label>
+                                    <input type="date" id="shift-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shift-start">Start Time</label>
+                                    <input type="time" id="shift-start" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shift-end">End Time</label>
+                                    <input type="time" id="shift-end" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="shift-role">Required Role</label>
+                                    <select id="shift-role" required>
+                                        <option value="Associate">Associate</option>
+                                        <option value="Supervisor">Supervisor</option>
+                                        <option value="Lead Analyst">Lead Analyst</option>
+                                    </select>
+                                </div>
+                                <div class="form-group align-end">
+                                    <button type="submit" class="btn btn-primary btn-block">Add Slot</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Pending Approvals list -->
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3>Pending Booking Approvals</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Request ID</th>
+                                            <th>Employee</th>
+                                            <th>Shift Slot Details</th>
+                                            <th>Type</th>
+                                            <th>Submitted</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="manager-approvals-table-body">
+                                        <!-- Manager approvals injected dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- AUTH MODAL (Login/Registration) -->
+    <div class="modal-backdrop" id="auth-modal" style="display: none;">
+        <div class="modal glass-card">
+            <div class="modal-header">
+                <h3 id="auth-modal-title">Sign In</h3>
+                <button class="btn-close" id="btn-close-auth"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- Toggle Form tab -->
+                <div class="auth-tabs">
+                    <button class="auth-tab-btn active" id="tab-login-btn">Login</button>
+                    <button class="auth-tab-btn" id="tab-register-btn">Register</button>
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="login-username" placeholder="Enter username..." required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-password" placeholder="Enter password..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Sign In</button>
+                </form>
+
+                <!-- REGISTER FORM -->
+                <form id="register-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="reg-username">Username</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-user"></i>
+                            <input type="text" id="reg-username" placeholder="Enter username..." required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="email" id="reg-email" placeholder="name@company.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="reg-password" placeholder="Min 6 characters..." required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-role">Roster Role</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-users-gear"></i>
+                            <select id="reg-role" required>
+                                <option value="EMPLOYEE">Employee (Shift Worker)</option>
+                                <option value="MANAGER">Manager (Scheduler)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Create Account</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+# Maven build target directory
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Compiled class files
+*.class
+
+# H2 Database files
+*.mv.db
+*.trace.db
+
+# Log files
+*.log
+logs/
+
+# IntelliJ IDEA IDE settings
+.idea/
+*.iml
+*.iws
+
+# Eclipse IDE settings
+.settings/
+.project
+.classpath
+.factorypath
+
+# NetBeans IDE settings
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code IDE settings
+.vscode/
+
+# OS-specific temporary files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
