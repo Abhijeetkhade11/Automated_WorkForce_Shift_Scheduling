@@ -180,10 +180,16 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
+// Mock Data for Fallback/Testing
+let mockUsers = [
+    { id: 1, username: 'admin', password: 'password123', email: 'admin@workplace.com', role: 'MANAGER' },
+    { id: 2, username: 'manager', password: 'password123', email: 'manager@workplace.com', role: 'MANAGER' }
+];
+
 // Handles user Login
 async function handleLogin(e) {
     e.preventDefault();
-    const username = document.getElementById('login-username').value;
+    const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
 
     const isApiOnline = await checkApiStatus();
@@ -200,6 +206,10 @@ async function handleLogin(e) {
                 showToast(`Successfully logged in as ${data.username}!`);
                 showAuthModal(false);
                 return;
+            } else {
+                const errText = await res.text();
+                showToast(errText || "Invalid username or password", "error");
+                return;
             }
         } catch (err) {
             console.error(err);
@@ -207,6 +217,18 @@ async function handleLogin(e) {
     }
 
     // Mock Login fallback (Developer Sandbox)
+    const matchedUser = mockUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (matchedUser) {
+        if (matchedUser.password && matchedUser.password !== password) {
+            showToast("Invalid password in sandbox mode", "error");
+            return;
+        }
+        loginUserSession(matchedUser);
+        showToast(`Logged in to sandbox session as ${matchedUser.username} (${matchedUser.role})`);
+        showAuthModal(false);
+        return;
+    }
+
     let role = 'EMPLOYEE';
     if (username.toLowerCase().includes('manager') || username.toLowerCase().includes('admin')) {
         role = 'MANAGER';
@@ -216,8 +238,10 @@ async function handleLogin(e) {
         id: Math.floor(Math.random() * 1000) + 1,
         username: username,
         email: `${username}@workplace.com`,
+        password: password,
         role: role
     };
+    mockUsers.push(mockUser);
     loginUserSession(mockUser);
     showToast(`Logged in to sandbox session as ${mockUser.username} (${role})`);
     showAuthModal(false);
@@ -226,8 +250,8 @@ async function handleLogin(e) {
 // Handles user Registration
 async function handleRegister(e) {
     e.preventDefault();
-    const username = document.getElementById('reg-username').value;
-    const email = document.getElementById('reg-email').value;
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
     const password = document.getElementById('reg-password').value;
     const role = document.getElementById('reg-role').value;
 
@@ -242,6 +266,7 @@ async function handleRegister(e) {
             if (res.ok) {
                 showToast("Account created successfully! Please Login.");
                 toggleAuthForm('login');
+                document.getElementById('login-username').value = username;
                 return;
             } else {
                 const errText = await res.text();
@@ -254,13 +279,29 @@ async function handleRegister(e) {
     }
 
     // Mock register success in sandbox
-    showToast("Sandbox account created successfully! Switching to Login tab.");
+    const existing = mockUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+    if (existing) {
+        showToast("Username already registered", "error");
+        return;
+    }
+
+    const newMockUser = {
+        id: Math.floor(Math.random() * 1000) + 10,
+        username: username,
+        email: email,
+        password: password,
+        role: role.toUpperCase()
+    };
+    mockUsers.push(newMockUser);
+    showToast(`Account created as ${role.toUpperCase()}! Switching to Login tab.`);
     toggleAuthForm('login');
+    document.getElementById('login-username').value = username;
 }
 
 // Store User Session
 function loginUserSession(user) {
     currentUser = user;
+    const userRole = (user.role || 'EMPLOYEE').toUpperCase();
     
     // Render profile in sidebar
     sidebarProfile.innerHTML = `
@@ -268,7 +309,7 @@ function loginUserSession(user) {
             <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
             <div class="user-details">
                 <span class="user-name">${user.username}</span>
-                <span class="user-role-tag">${user.role}</span>
+                <span class="user-role-tag">${userRole}</span>
             </div>
             <button class="btn-close" id="btn-logout" title="Log Out"><i class="fa-solid fa-sign-out-alt"></i></button>
         </div>
@@ -278,7 +319,7 @@ function loginUserSession(user) {
 
     // Show manager tab if appropriate
     const managerNavItem = document.querySelector('.nav-item.manager-only');
-    if (user.role === 'MANAGER') {
+    if (userRole === 'MANAGER') {
         managerNavItem.style.display = 'flex';
     } else {
         managerNavItem.style.display = 'none';

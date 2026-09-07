@@ -14,7 +14,7 @@ A real-time DevOps-driven **Automated Workforce Shift Scheduling System** design
 | **Week 4** | **Git and GitHub Repository Initialization** | ✅ Completed |
 | **Week 5** | **Feature Development with Branching** | ✅ Completed |
 | **Week 6** | **MVP Completion and Git Collaboration** | ✅ Completed |
-| **Week 7** | Jenkins Installation and Continuous Integration Job | ⏳ Pending |
+| **Week 7** | **Jenkins Installation and Continuous Integration Job** | 🔄 In Progress |
 | **Week 8** | Pipeline as Code and Server Deployment | ⏳ Pending |
 | **Week 9** | Selenium Test Design and Local Execution | ⏳ Pending |
 | **Week 10**| Continuous Testing in Jenkins | ⏳ Pending |
