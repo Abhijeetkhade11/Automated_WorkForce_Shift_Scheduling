@@ -26,14 +26,18 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
+        stage('Continuous Testing (Unit & Selenium UI)') {
             steps {
-                echo '=== STAGE 3: Executing Unit & Integration Tests ==='
+                echo '=== STAGE 3: Executing Unit Tests & Selenium WebDriver UI Tests ==='
                 bat 'mvnw.cmd test'
             }
             post {
                 always {
+                    echo '=== Archiving Surefire Test Reports ==='
                     junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                }
+                failure {
+                    echo 'WARNING: One or more automated tests failed in Continuous Testing stage!'
                 }
             }
         }
@@ -62,7 +66,7 @@ pipeline {
     post {
         success {
             echo '==================================================='
-            echo 'SUCCESS: Pipeline executed cleanly! Week 8 complete.'
+            echo 'SUCCESS: Pipeline & Continuous Testing executed cleanly!'
             echo '==================================================='
         }
         failure {
