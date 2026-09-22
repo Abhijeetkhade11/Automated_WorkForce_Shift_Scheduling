@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Uses Java 17 tool configured in Jenkins if available
-        jdk 'jdk17'
-    }
-
     environment {
         APP_NAME = 'Workforce Scheduling System'
         BUILD_ARTIFACT = 'target/scheduling-0.0.1-SNAPSHOT.jar'
