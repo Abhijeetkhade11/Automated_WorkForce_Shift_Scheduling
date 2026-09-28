@@ -6,15 +6,17 @@ public class UserResponse {
     private String username;
     private String email;
     private String role;
+    private String specialization;
 
     public UserResponse() {
     }
 
-    public UserResponse(Long id, String username, String email, String role) {
+    public UserResponse(Long id, String username, String email, String role, String specialization) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.role = role;
+        this.specialization = specialization;
     }
 
     public Long getId() {
@@ -47,5 +49,13 @@ public class UserResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }

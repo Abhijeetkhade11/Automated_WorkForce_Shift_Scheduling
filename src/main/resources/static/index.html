@@ -182,12 +182,50 @@
                                     <input type="date" id="shift-date" required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="shift-start">Start Time</label>
-                                    <input type="time" id="shift-start" required>
+                                    <label for="shift-start-time">Start Time</label>
+                                    <div style="display: flex; gap: 0.25rem;">
+                                        <select id="shift-start-time" required style="flex: 2;">
+                                            <option value="01:00">01:00</option>
+                                            <option value="02:00">02:00</option>
+                                            <option value="03:00">03:00</option>
+                                            <option value="04:00">04:00</option>
+                                            <option value="05:00">05:00</option>
+                                            <option value="06:00">06:00</option>
+                                            <option value="07:00">07:00</option>
+                                            <option value="08:00" selected>08:00</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="12:00">12:00</option>
+                                        </select>
+                                        <select id="shift-start-ampm" style="flex: 1;">
+                                            <option value="AM" selected>AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="shift-end">End Time</label>
-                                    <input type="time" id="shift-end" required>
+                                    <label for="shift-end-time">End Time</label>
+                                    <div style="display: flex; gap: 0.25rem;">
+                                        <select id="shift-end-time" required style="flex: 2;">
+                                            <option value="01:00">01:00</option>
+                                            <option value="02:00">02:00</option>
+                                            <option value="03:00">03:00</option>
+                                            <option value="04:00" selected>04:00</option>
+                                            <option value="05:00">05:00</option>
+                                            <option value="06:00">06:00</option>
+                                            <option value="07:00">07:00</option>
+                                            <option value="08:00">08:00</option>
+                                            <option value="09:00">09:00</option>
+                                            <option value="10:00">10:00</option>
+                                            <option value="11:00">11:00</option>
+                                            <option value="12:00">12:00</option>
+                                        </select>
+                                        <select id="shift-end-ampm" style="flex: 1;">
+                                            <option value="AM">AM</option>
+                                            <option value="PM" selected>PM</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="shift-role">Required Role</label>
@@ -293,12 +331,23 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="reg-role">Roster Role</label>
+                        <label for="reg-role">Account Type</label>
                         <div class="input-icon-wrapper">
                             <i class="fa-solid fa-users-gear"></i>
                             <select id="reg-role" required>
                                 <option value="EMPLOYEE">Employee (Shift Worker)</option>
                                 <option value="MANAGER">Manager (Scheduler)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="group-reg-specialization">
+                        <label for="reg-specialization">Employee Specialization</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-user-tag"></i>
+                            <select id="reg-specialization">
+                                <option value="Associate">Associate</option>
+                                <option value="Supervisor">Supervisor</option>
+                                <option value="Lead Analyst">Lead Analyst</option>
                             </select>
                         </div>
                     </div>

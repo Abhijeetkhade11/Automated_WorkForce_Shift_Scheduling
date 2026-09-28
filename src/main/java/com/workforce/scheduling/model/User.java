@@ -22,14 +22,18 @@ public class User {
     @Column(nullable = false)
     private String role; // "EMPLOYEE" or "MANAGER"
 
+    @Column
+    private String specialization; // "Associate", "Supervisor", "Lead Analyst"
+
     public User() {
     }
 
-    public User(String username, String password, String email, String role) {
+    public User(String username, String password, String email, String role, String specialization) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
+        this.specialization = specialization;
     }
 
     public Long getId() {
@@ -70,5 +74,13 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }

@@ -32,11 +32,17 @@ public class AuthController {
                     .body("Email address is already registered");
         }
 
+        String specialization = registerRequest.getSpecialization();
+        if (specialization == null || specialization.trim().isEmpty()) {
+            specialization = "Associate"; // default specialization
+        }
+
         User user = new User(
                 registerRequest.getUsername(),
-                registerRequest.getPassword(), // Store simply for demo/test logic ease
+                registerRequest.getPassword(),
                 registerRequest.getEmail(),
-                registerRequest.getRole().toUpperCase()
+                registerRequest.getRole().toUpperCase(),
+                specialization
         );
 
         User savedUser = userRepository.save(user);
@@ -45,7 +51,8 @@ public class AuthController {
                 savedUser.getId(),
                 savedUser.getUsername(),
                 savedUser.getEmail(),
-                savedUser.getRole()
+                savedUser.getRole(),
+                savedUser.getSpecialization()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -71,7 +78,8 @@ public class AuthController {
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole()
+                user.getRole(),
+                user.getSpecialization() != null ? user.getSpecialization() : "Associate"
         );
 
         return ResponseEntity.ok(response);

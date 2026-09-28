@@ -5,6 +5,8 @@ import com.workforce.scheduling.model.BookingRequest;
 import com.workforce.scheduling.model.ShiftSlot;
 import com.workforce.scheduling.repository.BookingRequestRepository;
 import com.workforce.scheduling.repository.ShiftSlotRepository;
+import com.workforce.scheduling.repository.UserRepository;
+import com.workforce.scheduling.model.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,9 @@ public class BookingController {
 
     @Autowired
     private ShiftSlotRepository shiftSlotRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/request")
     public ResponseEntity<?> requestBooking(@Valid @RequestBody BookingSubmission submission) {
@@ -65,13 +70,28 @@ public class BookingController {
         BookingRequest request = reqOpt.get();
         ShiftSlot slot = request.getShiftSlot();
 
-        request.setStatus("APPROVED");
-        bookingRepository.save(request);
+        if ("CANCEL".equalsIgnoreCase(request.getRequestType())) {
+            // Approving a cancellation request
+            request.setStatus("APPROVED");
+            bookingRepository.save(request);
 
-        slot.setStatus("CONFIRMED");
-        slot.setAssignedUserId(request.getUserId());
-        slot.setAssignedUsername("Employee #" + request.getUserId());
-        shiftSlotRepository.save(slot);
+            slot.setStatus("OPEN");
+            slot.setAssignedUserId(null);
+            slot.setAssignedUsername(null);
+            shiftSlotRepository.save(slot);
+        } else {
+            // Approving a booking request
+            request.setStatus("APPROVED");
+            bookingRepository.save(request);
+
+            slot.setStatus("CONFIRMED");
+            slot.setAssignedUserId(request.getUserId());
+            
+            Optional<User> uOpt = userRepository.findById(request.getUserId());
+            String username = uOpt.isPresent() ? uOpt.get().getUsername() : "Employee #" + request.getUserId();
+            slot.setAssignedUsername(username);
+            shiftSlotRepository.save(slot);
+        }
 
         return ResponseEntity.ok(request);
     }
@@ -86,19 +106,29 @@ public class BookingController {
         BookingRequest request = reqOpt.get();
         ShiftSlot slot = request.getShiftSlot();
 
-        request.setStatus("REJECTED");
-        bookingRepository.save(request);
+        if ("CANCEL".equalsIgnoreCase(request.getRequestType())) {
+            // Rejecting a cancellation request -> Keep shift confirmed
+            request.setStatus("REJECTED");
+            bookingRepository.save(request);
 
-        slot.setStatus("OPEN");
-        slot.setAssignedUserId(null);
-        slot.setAssignedUsername(null);
-        shiftSlotRepository.save(slot);
+            slot.setStatus("CONFIRMED");
+            shiftSlotRepository.save(slot);
+        } else {
+            // Rejecting a booking request -> Reopen slot
+            request.setStatus("REJECTED");
+            bookingRepository.save(request);
+
+            slot.setStatus("OPEN");
+            slot.setAssignedUserId(null);
+            slot.setAssignedUsername(null);
+            shiftSlotRepository.save(slot);
+        }
 
         return ResponseEntity.ok(request);
     }
 
     @PostMapping("/cancel-by-slot/{slotId}")
-    public ResponseEntity<?> cancelBookingBySlot(@PathVariable Long slotId) {
+    public ResponseEntity<?> requestCancelBookingBySlot(@PathVariable Long slotId) {
         Optional<ShiftSlot> slotOpt = shiftSlotRepository.findById(slotId);
         if (slotOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shift slot not found");
@@ -111,23 +141,21 @@ public class BookingController {
 
         Long userId = slot.getAssignedUserId();
 
-        // Release slot
-        slot.setStatus("OPEN");
-        slot.setAssignedUserId(null);
-        slot.setAssignedUsername(null);
+        // Update slot status to CANCELLATION_REQUESTED
+        slot.setStatus("CANCELLATION_REQUESTED");
         shiftSlotRepository.save(slot);
 
-        // Record cancel log
+        // Record pending cancellation request for Manager approval
         BookingRequest request = new BookingRequest(
                 userId,
                 slot,
                 "CANCEL",
-                "APPROVED",
+                "PENDING",
                 new Date().toLocaleString()
         );
-        bookingRepository.save(request);
+        BookingRequest savedRequest = bookingRepository.save(request);
 
-        return ResponseEntity.ok(request);
+        return ResponseEntity.ok(savedRequest);
     }
 
     @GetMapping("/user/{userId}")

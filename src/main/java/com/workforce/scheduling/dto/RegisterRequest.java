@@ -21,6 +21,8 @@ public class RegisterRequest {
     @NotBlank(message = "Role is required")
     private String role; // "EMPLOYEE" or "MANAGER"
 
+    private String specialization; // "Associate", "Supervisor", "Lead Analyst"
+
     public RegisterRequest() {
     }
 
@@ -54,5 +56,13 @@ public class RegisterRequest {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
     }
 }
