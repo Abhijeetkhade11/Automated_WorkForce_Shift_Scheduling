@@ -20,8 +20,8 @@ A real-time DevOps-driven **Automated Workforce Shift Scheduling System** design
 | **Week 10**| **Continuous Testing in Jenkins** | ✅ Completed |
 | **Week 11**| **Docker Image and Container Lifecycle** | ✅ Completed |
 | **Week 12**| Jenkins-Docker Continuous Deployment | ✅ Completed |
-| **Week 13**| Configuration Management Script | 🔄 In Progress |
-| **Week 14**| Automated Provisioning and Reliability Validation | ⏳ Pending |
+| **Week 13**| Configuration Management Script | ✅ Completed |
+| **Week 14**| Automated Provisioning and Reliability Validation | 🔄 In Progress |
 | **Week 15**| Final End-to-End Release, Documentation and Viva | ⏳ Pending |
 
 ---

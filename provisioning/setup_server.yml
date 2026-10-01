@@ -1,0 +1,41 @@
+---
+- name: Setup Workforce Scheduling Environment
+  hosts: all
+  become: yes
+  vars:
+    app_port: 8080
+    container_name: "shift-scheduler"
+    image_name: "workforce-scheduling:latest"
+
+  tasks:
+    - name: Ensure Docker is installed
+      package:
+        name: docker
+        state: present
+
+    - name: Ensure Docker service is running and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Stop existing application container (if running)
+      docker_container:
+        name: "{{ container_name }}"
+        state: stopped
+      ignore_errors: yes
+
+    - name: Remove existing application container
+      docker_container:
+        name: "{{ container_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Start the Workforce Scheduling container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_name }}"
+        state: started
+        ports:
+          - "{{ app_port }}:8080"
+        restart_policy: unless-stopped
