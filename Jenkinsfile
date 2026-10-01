@@ -49,11 +49,21 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Docker Image Build') {
             steps {
-                echo '=== STAGE 5: Verifying and Deploying Server Artifact ==='
-                bat 'if exist target\\scheduling-0.0.1-SNAPSHOT.jar ( echo Artifact verified successfully! Ready for server deployment. ) else ( exit /b 1 )'
-                echo 'Application package is verified and ready for environment deployment.'
+                echo '=== STAGE 5: Building Docker Image ==='
+                bat 'docker build -t workforce-scheduling:latest .'
+            }
+        }
+
+        stage('Continuous Deployment (Docker)') {
+            steps {
+                echo '=== STAGE 6: Deploying Container ==='
+                bat '''
+                    docker stop shift-scheduler || exit 0
+                    docker rm shift-scheduler || exit 0
+                    docker run -d -p 8080:8080 --name shift-scheduler workforce-scheduling:latest
+                '''
             }
         }
     }
